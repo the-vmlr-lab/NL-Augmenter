@@ -1,5 +1,6 @@
 import sys
 from transformations.stopword_removal.languages import languages
+import nltk
 
 stopword_library = languages
 
@@ -16,7 +17,7 @@ def stopword_remove(user_input, stop_words):
     Assumes every string in the user_input is normalized to its lower case equivalent.
     Takes a list of strings and returns a list of strings.
     """
-    return [w for w in user_input if w not in stop_words]
+    return [word for word in user_input if word not in stop_words]
 
 
 
