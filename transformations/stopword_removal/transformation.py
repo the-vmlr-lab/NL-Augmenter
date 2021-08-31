@@ -1,45 +1,32 @@
-import re
+import sys
+from transformations.stopword_removal.languages import languages
 
-from nltk.stem import PorterStemmer
-from nltk.stem import LancasterStemmer
-from nltk.stem.snowball import SnowballStemmer
+stopword_library = languages
 
-from nltk.tokenize import sent_tokenize, word_tokenize
-
-from interfaces.SentenceOperation import SentenceOperation
-from tasks.TaskTypes import TaskType
-
-# a set of stemmers to select from
-porter = PorterStemmer()
-lancaster = LancasterStemmer()
-
-class StopWordRemoval(SentenceOperation):
+def stopword_extract(language):
     """
-
-
+    Takes the language desired as a string (i.e. English is 'en', French is 'fr', etc.)
+    Default will be English.
     """
+    return stopword_library[language]
 
-    def stem_text(text, max_outputs = 1):
-        tokenized_text = word_tokenize(text)
-        stemmed = [porter.stem(word) for word in word_tokenize(raw_text)]
-        
-        detokenized_text = " ".join(stemmed)
-        res_text = re.sub(r'\s([?,.!"](?:\s|$))', r'\1', detokenized_text)
-        
-        return res
+def stopword_remove(user_input, stop_words):
+    """
+    Remove stopwords using standard list comprehension.
+    Assumes every string in the user_input is normalized to its lower case equivalent.
+    Takes a list of strings and returns a list of strings.
+    """
+    return [w for w in user_input if w not in stop_words]
 
-    def __init__(self, seed=0, max_outputs=1):
-        super().__init__(seed, max_outputs=max_outputs)
 
-    def generate(self, raw_text: str):
-        pertubed_text = stem_text(
-            text = raw_text,
-            max_outputs = self.max_outputs
-        )
 
-        return pertubed_text
+def main():
 
-"""
-# Sample code to demonstrate:
+    # a list of stop words to be removed
+    stop_words = ['the', 'that', 'to', 'as', 'there', 'has', 'and', 'or', 'is', 'not', 'a', 'of', 'but', 'in', 'by', 'on', 'are', 'it', 'if']
 
-"""
+    user_input = 'the cat walked down the road.'.split()
+    print(stopword_remove(user_input, stop_words))
+
+if __name__ == "__main__":
+    main()
