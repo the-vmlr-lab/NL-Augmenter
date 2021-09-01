@@ -1,33 +1,28 @@
-import sys
-from transformations.stopword_removal.languages import languages
-import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import ToktokTokenizer
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+from interfaces.SentenceOperation import SentenceOperation
 
-stopword_library = languages
 
-def stopword_extract(language):
+class StopwordRemoval(SentenceOperation):
     """
-    Takes the language desired as a string (i.e. English is 'en', French is 'fr', etc.)
-    Default will be English.
+    This is a class that offers a simple stopword removal function.
     """
-    return stopword_library[language]
-
-def stopword_remove(user_input, stop_words):
-    """
-    Remove stopwords using standard list comprehension.
-    Assumes every string in the user_input is normalized to its lower case equivalent.
-    Takes a list of strings and returns a list of strings.
-    """
-    return [word for word in user_input if word not in stop_words]
-
-
-
-def main():
-
-    # a list of stop words to be removed
-    stop_words = ['the', 'that', 'to', 'as', 'there', 'has', 'and', 'or', 'is', 'not', 'a', 'of', 'but', 'in', 'by', 'on', 'are', 'it', 'if']
-
-    user_input = 'the cat walked down the road.'.split()
-    print(stopword_remove(user_input, stop_words))
-
-if __name__ == "__main__":
-    main()
+    def stopword_remove(self, user_input, stopwords_lang='english', tokenized=False, detokenize=True):
+        """
+        Remove stopwords using standard list comprehension. Default is English.
+        Every string in the user_input is detokenized unless otherwise.
+        Returns a detokenized version of the text with stopwords removed unless otherwise.
+        """
+        stop_words = set(stopwords.words(stopwords_lang))
+        if tokenized:
+            if detokenize:
+                return TreebankWordDetokenizer().detokenize([word for word in user_input if word.lower() not in stop_words])
+            else:
+                return [word for word in user_input if word.lower() not in stop_words]
+        else:
+            user_input_tokenized = ToktokTokenizer().tokenize(user_input)
+            if detokenize:
+                return TreebankWordDetokenizer().detokenize([word for word in user_input_tokenized if word.lower() not in stop_words])
+            else:
+                return [word for word in user_input_tokenized if word.lower() not in stop_words]
